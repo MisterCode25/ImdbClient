@@ -8,11 +8,18 @@
 
 import UIKit
 
-class NowPlayingViewController: UIViewController {
+class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var moviesTableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.moviesTableView.delegate = self
+        self.moviesTableView.dataSource = self
 
+        self.moviesTableView.rowHeight = 140
+        
         // Do any additional setup after loading the view.
     }
 
@@ -21,6 +28,25 @@ class NowPlayingViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - TableView DataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = moviesTableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell") as! MovieTableViewCell
+        
+        cell.textLabel?.text = "Hello \(indexPath.row + 1)"
+        
+        return cell
+    }
+    
+    // MARK: - TableView Delegates
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // TODO: Add Deselect process
+    }
 
     /*
     // MARK: - Navigation
