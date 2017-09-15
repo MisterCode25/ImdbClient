@@ -35,10 +35,10 @@
             </objects>
             <point key="canvasLocation" x="912.79999999999995" y="-645.42728635682158"/>
         </scene>
-        <!--View Controller-->
+        <!--Movie Detail View Controller-->
         <scene sceneID="gwz-0Z-c11">
             <objects>
-                <viewController id="Bhe-ih-fG9" sceneMemberID="viewController">
+                <viewController id="Bhe-ih-fG9" customClass="MovieDetailViewController" customModule="ImdbClient" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="KPA-el-4jY"/>
                         <viewControllerLayoutGuide type="bottom" id="qnq-FM-1w3"/>
