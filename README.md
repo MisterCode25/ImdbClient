@@ -38,7 +38,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+- Always remember to add the `self.tableView.delegate = self` and `self.tableView.dataSource = self`
 
 ## License
 
