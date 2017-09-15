@@ -37,7 +37,9 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = moviesTableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell") as! MovieTableViewCell
         
-        cell.textLabel?.text = "Hello \(indexPath.row + 1)"
+        cell.movieTitleLabel?.text = "Movie \(indexPath.row + 1)"
+        cell.overviewLabel?.text = "Overview \(indexPath.row + 1)"
+        cell.releaseDateLabel?.text = "Release Date \(Date())"
         
         return cell
     }
@@ -45,7 +47,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: - TableView Delegates
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: Add Deselect process
+        moviesTableView.deselectRow(at: indexPath, animated: true)
     }
 
     /*
