@@ -99,14 +99,21 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         moviesTableView.deselectRow(at: indexPath, animated: true)
     }
 
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        let vc = segue.destination as! MovieDetailViewController
+        let indexPath = moviesTableView.indexPath(for: sender as! UITableViewCell)!
+        
+        let movie = movies[indexPath.row]
+        if let imageEndpoint = movie["poster_path"] as? String {
+            vc.posterEndpoint = imageEndpoint
+        } else {
+            print("Image not found")
+        }
     }
-    */
 
 }
