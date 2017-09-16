@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import AFNetworking
 
 class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var moviesTableView: UITableView!
     
     var movies: [NSDictionary] = [];
+    let posterHostname = "https://image.tmdb.org/t/p/w342";
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,6 +79,16 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         cell.overviewLabel?.text = movie["overview"] as? String
         let releaseDate = movie["release_date"] as! String
         cell.releaseDateLabel?.text = "Release Date \(releaseDate)"
+        
+        if let imageEndpoint = movie["poster_path"] as? String {
+            if let imageUrl = URL(string: posterHostname + imageEndpoint) {
+                cell.posterImageView.setImageWith(imageUrl)
+            } else {
+                print("Url not formed")
+            }
+        } else {
+            print("Image not found")
+        }
         
         return cell
     }
