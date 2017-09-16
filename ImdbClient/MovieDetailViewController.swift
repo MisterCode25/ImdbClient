@@ -13,6 +13,11 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var posterBackground: UIImageView!
     @IBOutlet weak var contentScrollView: UIScrollView!
     
+    let lowResPosterHostname = "https://image.tmdb.org/t/p/w45";
+    let highResPosterHostname = "https://image.tmdb.org/t/p/original";
+    
+    var posterEndpoint: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -20,6 +25,30 @@ class MovieDetailViewController: UIViewController {
         let contentHeight = contentScrollView.bounds.height * 3
         contentScrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
         // Do any additional setup after loading the view.
+        
+        // Load the low resolution image as soon as possible
+        if let imageEndpoint = posterEndpoint {
+            if let imageUrl = URL(string: lowResPosterHostname + imageEndpoint) {
+                posterBackground.setImageWith(imageUrl)
+                loadHighResImage()
+            } else {
+                print("Url not formed")
+            }
+        } else {
+            print("Image not found")
+        }
+    }
+    
+    func loadHighResImage() {
+        if let imageEndpoint = posterEndpoint {
+            if let imageUrl = URL(string: highResPosterHostname + imageEndpoint) {
+                posterBackground.setImageWith(imageUrl)
+            } else {
+                print("Url not formed")
+            }
+        } else {
+            print("Image not found")
+        }
     }
 
     override func didReceiveMemoryWarning() {
