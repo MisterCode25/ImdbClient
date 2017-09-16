@@ -10,9 +10,15 @@ import UIKit
 
 class MovieDetailViewController: UIViewController {
 
+    @IBOutlet weak var posterBackground: UIImageView!
+    @IBOutlet weak var contentScrollView: UIScrollView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let contentWidth = contentScrollView.bounds.width
+        let contentHeight = contentScrollView.bounds.height * 3
+        contentScrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
         // Do any additional setup after loading the view.
     }
 
