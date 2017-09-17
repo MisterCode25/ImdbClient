@@ -41,6 +41,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 - Always remember to add the `self.tableView.delegate = self` and `self.tableView.dataSource = self`
 - Why does the background of the table view remains white? (You can see it when it bounces)
 - Why does `viewDetailsContainer.sizeToFit()` not resize the view? 
+- TODO: Animate the network error view
 
 ## License
 

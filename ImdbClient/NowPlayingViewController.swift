@@ -13,9 +13,11 @@ import MBProgressHUD
 class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var moviesTableView: UITableView!
+    @IBOutlet weak var networkErrorView: UIView!
     
     var movies: [NSDictionary] = [];
     let posterHostname = "https://image.tmdb.org/t/p/w342";
+    let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +26,10 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         self.moviesTableView.dataSource = self
 
         self.moviesTableView.rowHeight = 162
+        
+        refreshControl.attributedTitle = NSAttributedString(string: "Updating movie list...")
+        refreshControl.addTarget(self, action: #selector(refreshFeed(_:)), for: UIControlEvents.valueChanged)
+        moviesTableView.insertSubview(refreshControl, at: 0)
         
         // Do any additional setup after loading the view.
         fetchMovies()
@@ -34,7 +40,14 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Pull Down to refresh
+    
+    func refreshFeed(_ refreshControl: UIRefreshControl) {
+        fetchMovies()
+    }
+    
     // MARK: - Network Request
+    
     func fetchMovies() {
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
@@ -52,6 +65,11 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         
         let task: URLSessionDataTask = session.dataTask(
         with: request as URLRequest) { (data, response, error) in
+            if (error != nil) {
+                // There is an error, let's handle it properly
+                self.networkErrorView.isHidden = false
+            }
+            self.networkErrorView.isHidden = true
             if let data = data {
                 if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print("responseDictionary: \(responseDictionary)")
@@ -67,6 +85,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
             // see the Progress HUD
             let when = DispatchTime.now() + 2
             DispatchQueue.main.asyncAfter(deadline: when) {
+                self.refreshControl.endRefreshing()
                 MBProgressHUD.hide(for: self.view, animated: true)
             }
         }

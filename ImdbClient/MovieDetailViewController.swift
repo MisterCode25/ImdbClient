@@ -36,9 +36,11 @@ class MovieDetailViewController: UIViewController {
             self.title = movieDetails?["title"] as? String
             titleLabel?.text = movieDetails?["original_title"] as? String
             releaseDateLabel?.text = movieDetails?["release_date"] as? String
+            overviewLabel?.text = movieDetails?["overview"] as? String
+            
+            // TODO: Where to get this value from?
             ratingLabel?.text = "78%"//movieDetails?["release_date"] as? String
             durationLabel?.text = "1 hour 52 minutes"//movieDetails?["release_date"] as? String
-            overviewLabel?.text = movieDetails?["overview"] as? String
             
             overviewLabel.sizeToFit()
             viewDetailsContainer.sizeToFit()
