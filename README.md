@@ -10,7 +10,7 @@ The following **required** functionality is completed:
 
 - [x] User can view a list of movies currently playing in theaters. Poster images load asynchronously.
 - [x] User can view movie details by tapping on a cell.
-- [ ] User sees loading state while waiting for the API.
+- [x] User sees loading state while waiting for the API.
 - [ ] User sees an error message when there is a network error.
 - [ ] User can pull to refresh the movie list.
 
@@ -39,6 +39,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Notes
 
 - Always remember to add the `self.tableView.delegate = self` and `self.tableView.dataSource = self`
+- Why does the background of the table view remains white? (You can see it when it bounces)
+- Why does `viewDetailsContainer.sizeToFit()` not resize the view? 
 
 ## License
 

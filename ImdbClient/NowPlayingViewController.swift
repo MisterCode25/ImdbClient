@@ -8,6 +8,7 @@
 
 import UIKit
 import AFNetworking
+import MBProgressHUD
 
 class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -35,6 +36,9 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     
     // MARK: - Network Request
     func fetchMovies() {
+        
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+        
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         
         // Do any additional setup after loading the view.
@@ -58,6 +62,12 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
                     // reload the table view
                     self.moviesTableView.reloadData()
                 }
+            }
+            // Test purposes, we don't really want the user to be waiting but for demostration purposes we want to
+            // see the Progress HUD
+            let when = DispatchTime.now() + 2
+            DispatchQueue.main.asyncAfter(deadline: when) {
+                MBProgressHUD.hide(for: self.view, animated: true)
             }
         }
         task.resume()
