@@ -54,7 +54,12 @@ class MovieDetailViewController: UIViewController {
         if let imageEndpoint = posterEndpoint {
             if let imageUrl = URL(string: lowResPosterHostname + imageEndpoint) {
                 posterBackground.setImageWith(imageUrl)
-                loadHighResImage()
+                // After the low res is loaded, let's load the high res
+                // Adding 1 sec delay for testing purposes
+                let when = DispatchTime.now() + 1
+                DispatchQueue.main.asyncAfter(deadline: when) {
+                    self.loadHighResImage()
+                }
             } else {
                 print("Url not formed")
             }
