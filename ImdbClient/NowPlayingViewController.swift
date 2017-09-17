@@ -109,6 +109,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         let indexPath = moviesTableView.indexPath(for: sender as! UITableViewCell)!
         
         let movie = movies[indexPath.row]
+        vc.movieDetails = movie
         if let imageEndpoint = movie["poster_path"] as? String {
             vc.posterEndpoint = imageEndpoint
         } else {
