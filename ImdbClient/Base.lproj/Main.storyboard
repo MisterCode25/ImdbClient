@@ -172,6 +172,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="6Na-fo-qcO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
                         <color key="barTintColor" red="0.97594511510000004" green="0.82647809090000002" blue="0.005351772504" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

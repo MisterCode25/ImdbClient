@@ -33,6 +33,7 @@ class MovieDetailViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         if movieDetails != nil {
+            self.title = movieDetails?["title"] as? String
             titleLabel?.text = movieDetails?["original_title"] as? String
             releaseDateLabel?.text = movieDetails?["release_date"] as? String
             ratingLabel?.text = "78%"//movieDetails?["release_date"] as? String
