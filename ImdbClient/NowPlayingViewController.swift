@@ -10,10 +10,11 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 
     @IBOutlet weak var moviesTableView: UITableView!
     @IBOutlet weak var networkErrorView: UIView!
+    @IBOutlet weak var collectionView: UICollectionView!
     
     lazy var searchBar: UISearchBar = UISearchBar(frame: .zero)
     
@@ -31,6 +32,8 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         self.moviesTableView.delegate = self
         self.moviesTableView.dataSource = self
         self.searchBar.delegate = self
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
 
         self.moviesTableView.rowHeight = 162
         
@@ -55,6 +58,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
             return movieItem.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
         })
         self.moviesTableView.reloadData()
+        self.collectionView.reloadData()
     }
     
     // MARK: - Pull Down to refresh
@@ -102,6 +106,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
                     self.moviesFiltered = self.movies
                     // reload the table view
                     self.moviesTableView.reloadData()
+                    self.collectionView.reloadData()
                 }
             }
             // Test purposes, we don't really want the user to be waiting but for demostration purposes we want to
@@ -116,6 +121,61 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         
     }
     
+    // MARK: - CollectionView DataSource
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return moviesFiltered.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let item = self.collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCollectionViewCell", for: indexPath) as! MovieCollectionViewCell
+        
+        let movie = moviesFiltered[indexPath.row]
+        
+        // Customize the selection color
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.orange
+        item.selectedBackgroundView = backgroundView
+        
+        item.movieTitleLabel.text = movie["title"] as? String
+        
+        if let imageEndpoint = movie["poster_path"] as? String {
+            if let imageUrl = URL(string: posterHostname + imageEndpoint) {
+                let imageRequest = URLRequest(url: imageUrl)
+                item.posterView.setImageWith(
+                    imageRequest,
+                    placeholderImage: nil,
+                    success: { (imageRequest, imageResponse, image) in
+                        if imageResponse != nil {
+                            item.posterView.alpha = 0.0
+                            item.posterView.image = image
+                            UIView.animate(withDuration: 0.3, animations: {
+                                item.posterView.alpha = 1.0
+                            })
+                        } else {
+                            item.posterView.image = image
+                        }
+                },
+                    failure: { (imageRequest, imageResponse, error) in
+                        print("There was an error loading the image")
+                })
+                
+            } else {
+                print("Url not formed")
+            }
+        } else {
+            print("Image not found")
+        }
+        
+        return item
+    }
+    
+    // MARK: - CollectionView Delegate
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.collectionView.deselectItem(at: indexPath, animated: true)
+    }
+    
     // MARK: - TableView DataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -123,7 +183,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = moviesTableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell") as! MovieTableViewCell
+        let cell = self.moviesTableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell") as! MovieTableViewCell
         
         let movie = moviesFiltered[indexPath.row]
         
@@ -179,21 +239,48 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
+        
         // Remove the Back text from the navigation bar
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         let vc = segue.destination as! MovieDetailViewController
-        let indexPath = moviesTableView.indexPath(for: sender as! UITableViewCell)!
         
-        let movie = moviesFiltered[indexPath.row]
-        vc.movieDetails = movie
-        if let imageEndpoint = movie["poster_path"] as? String {
-            vc.posterEndpoint = imageEndpoint
-        } else {
-            print("Image not found")
+        if let indexPath = self.moviesTableView.indexPathForSelectedRow {
+            print("TableView Tapped")
+            let movie = moviesFiltered[indexPath.row]
+            vc.movieDetails = movie
+            if let imageEndpoint = movie["poster_path"] as? String {
+                vc.posterEndpoint = imageEndpoint
+            } else {
+                print("Image not found")
+            }
+        } else if let indexPath = self.collectionView.indexPathsForSelectedItems {
+            print("CollectionView Tapped")
+            let movie = moviesFiltered[indexPath[0].row]
+            vc.movieDetails = movie
+            if let imageEndpoint = movie["poster_path"] as? String {
+                vc.posterEndpoint = imageEndpoint
+            } else {
+                print("Image not found")
+            }
         }
+        
     }
 
+    // MARK: - UI Events
+    
+    @IBAction func segmentedControlChanged(_ sender: UISegmentedControl) {
+        print("The view has changed")
+        if sender.selectedSegmentIndex == 0 {
+            self.moviesTableView.isHidden = false
+            self.collectionView.isHidden = true
+        } else {
+            self.moviesTableView.isHidden = true
+            self.collectionView.isHidden = false
+        }
+    }
+    
+    
 }
