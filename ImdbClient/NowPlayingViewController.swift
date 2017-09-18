@@ -121,7 +121,25 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         
         if let imageEndpoint = movie["poster_path"] as? String {
             if let imageUrl = URL(string: posterHostname + imageEndpoint) {
-                cell.posterImageView.setImageWith(imageUrl)
+                let imageRequest = URLRequest(url: imageUrl)
+                cell.posterImageView.setImageWith(
+                    imageRequest,
+                    placeholderImage: nil,
+                    success: { (imageRequest, imageResponse, image) in
+                        if imageResponse != nil {
+                            cell.posterImageView.alpha = 0.0
+                            cell.posterImageView.image = image
+                            UIView.animate(withDuration: 0.3, animations: {
+                                cell.posterImageView.alpha = 1.0
+                            })
+                        } else {
+                            cell.posterImageView.image = image
+                        }
+                },
+                    failure: { (imageRequest, imageResponse, error) in
+                        print("There was an error loading the image")
+                })
+                
             } else {
                 print("Url not formed")
             }
