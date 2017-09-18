@@ -132,6 +132,10 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        // Remove the Back text from the navigation bar
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         let vc = segue.destination as! MovieDetailViewController
