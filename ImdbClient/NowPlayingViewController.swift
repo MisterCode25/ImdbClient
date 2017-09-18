@@ -104,6 +104,16 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         
         let movie = movies[indexPath.row]
         
+        // Customize the selection color
+        // For the fun of it, half of the rows will have a system style and the other ones will have a custom orange
+        if (indexPath.row % 2 == 0) {
+            cell.selectionStyle = .gray
+        } else {
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = UIColor.orange
+            cell.selectedBackgroundView = backgroundView
+        }
+        
         cell.movieTitleLabel?.text = movie["title"] as? String
         cell.overviewLabel?.text = movie["overview"] as? String
         let releaseDate = movie["release_date"] as! String
