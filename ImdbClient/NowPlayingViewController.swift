@@ -10,20 +10,27 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class NowPlayingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var moviesTableView: UITableView!
     @IBOutlet weak var networkErrorView: UIView!
     
-    var movies: [NSDictionary] = [];
-    let posterHostname = "https://image.tmdb.org/t/p/w342";
+    lazy var searchBar: UISearchBar = UISearchBar(frame: .zero)
+    
+    var movies: [NSDictionary] = []
+    var moviesFiltered: [NSDictionary] = []
+    let posterHostname = "https://image.tmdb.org/t/p/w342"
     let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        searchBar.placeholder = "Filter movies"
+        self.navigationItem.titleView = searchBar
+        
         self.moviesTableView.delegate = self
         self.moviesTableView.dataSource = self
+        self.searchBar.delegate = self
 
         self.moviesTableView.rowHeight = 162
         
@@ -38,6 +45,16 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Search Bar Delegate
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        moviesFiltered = searchText.isEmpty ? movies : movies.filter({ (item) -> Bool in
+            let movieItem = item["title"] as! String
+            return movieItem.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
+        })
+        self.moviesTableView.reloadData()
     }
     
     // MARK: - Pull Down to refresh
@@ -82,6 +99,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
                     // Recall there are two fields in the response dictionary, 'meta' and 'response'.
                     // This is how we get the 'response' field
                     self.movies = responseDictionary["results"] as! [NSDictionary]
+                    self.moviesFiltered = self.movies
                     // reload the table view
                     self.moviesTableView.reloadData()
                 }
@@ -101,13 +119,13 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: - TableView DataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        return moviesFiltered.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = moviesTableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell") as! MovieTableViewCell
         
-        let movie = movies[indexPath.row]
+        let movie = moviesFiltered[indexPath.row]
         
         // Customize the selection color
         let backgroundView = UIView()
@@ -169,7 +187,7 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         let vc = segue.destination as! MovieDetailViewController
         let indexPath = moviesTableView.indexPath(for: sender as! UITableViewCell)!
         
-        let movie = movies[indexPath.row]
+        let movie = moviesFiltered[indexPath.row]
         vc.movieDetails = movie
         if let imageEndpoint = movie["poster_path"] as? String {
             vc.posterEndpoint = imageEndpoint
