@@ -67,9 +67,14 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UITable
         with: request as URLRequest) { (data, response, error) in
             if (error != nil) {
                 // There is an error, let's handle it properly
+                self.networkErrorView.alpha = 0.0
                 self.networkErrorView.isHidden = false
+                UIView.animate(withDuration: 0.3, animations: { 
+                    self.networkErrorView.alpha = 1.0
+                })
             }
             self.networkErrorView.isHidden = true
+            
             if let data = data {
                 if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print("responseDictionary: \(responseDictionary)")
