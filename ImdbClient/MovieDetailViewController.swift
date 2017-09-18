@@ -53,13 +53,34 @@ class MovieDetailViewController: UIViewController {
         // Load the low resolution image as soon as possible
         if let imageEndpoint = posterEndpoint {
             if let imageUrl = URL(string: lowResPosterHostname + imageEndpoint) {
-                posterBackground.setImageWith(imageUrl)
-                // After the low res is loaded, let's load the high res
-                // Adding 1 sec delay for testing purposes
-                let when = DispatchTime.now() + 1
-                DispatchQueue.main.asyncAfter(deadline: when) {
-                    self.loadHighResImage()
-                }
+                let imageRequest = URLRequest(url: imageUrl)
+                posterBackground.setImageWith(
+                    imageRequest,
+                    placeholderImage: nil,
+                    success: { (imageRequest, imageResponse, image) in
+                        if imageResponse != nil {
+                            self.posterBackground.alpha = 0.0
+                            self.posterBackground.image = image
+                            UIView.animate(
+                                withDuration: 0.3,
+                                animations: {
+                                self.posterBackground.alpha = 1.0
+                            }, completion: { (result) in
+                                // After the low res is loaded, let's load the high res
+                                // Adding 1 sec delay for testing purposes
+                                let when = DispatchTime.now() + 0.3
+                                DispatchQueue.main.asyncAfter(deadline: when) {
+                                    self.loadHighResImage()
+                                }
+                            })
+                        } else {
+                            self.posterBackground.image = image
+                        }
+                },
+                    failure: { (imageRequest, imageResponse, error) in
+                        print("There was an error loading the low res image")
+                        self.loadHighResImage()
+                })
             } else {
                 print("Url not formed")
             }
@@ -71,7 +92,16 @@ class MovieDetailViewController: UIViewController {
     func loadHighResImage() {
         if let imageEndpoint = posterEndpoint {
             if let imageUrl = URL(string: highResPosterHostname + imageEndpoint) {
-                posterBackground.setImageWith(imageUrl)
+                let imageRequest = URLRequest(url: imageUrl)
+                posterBackground.setImageWith(
+                    imageRequest,
+                    placeholderImage: nil,
+                    success: { (imageRequest, imageResponse, image) in
+                        // We don't care if the image comes from the network or the local cache
+                        self.posterBackground.image = image
+                }, failure: { (imageRquest, imageResponse, error) in
+                    print("There was an error loading the high res image")
+                })
             } else {
                 print("Url not formed")
             }
